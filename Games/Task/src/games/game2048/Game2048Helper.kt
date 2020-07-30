@@ -23,7 +23,7 @@ fun <T : Any> List<T?>.moveAndMergeEqual(merge: (T) -> T): List<T> {
         var i = 1
         while (i < size) {
             if (this[i] == this[i - 1]) {
-                this[i - 1] = double(this[i])
+                this[i - 1] = merge(this[i])
                 removeAt(i)
             }
             i++
@@ -31,6 +31,7 @@ fun <T : Any> List<T?>.moveAndMergeEqual(merge: (T) -> T): List<T> {
     }
     return noNull
 }
+
 
 
 

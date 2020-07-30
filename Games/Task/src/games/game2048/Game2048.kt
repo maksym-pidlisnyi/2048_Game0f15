@@ -58,7 +58,14 @@ fun GameBoard<Int?>.addNewValue(initializer: Game2048Initializer<Int>) {
  * Return 'true' if the values were moved and 'false' otherwise.
  */
 fun GameBoard<Int?>.moveValuesInRowOrColumn(rowOrColumn: List<Cell>): Boolean {
-    TODO()
+    val list = rowOrColumn.map { this[it] }.moveAndMergeEqual { it -> it * 2 }
+    rowOrColumn.forEachIndexed{
+        index, cell -> this[cell] =
+            if (index < list.size)
+                list[index]
+            else null
+    }
+    return list.isNullOrEmpty() && list.size < rowOrColumn.size
 }
 
 /*
@@ -69,5 +76,25 @@ fun GameBoard<Int?>.moveValuesInRowOrColumn(rowOrColumn: List<Cell>): Boolean {
  * Return 'true' if the values were moved and 'false' otherwise.
  */
 fun GameBoard<Int?>.moveValues(direction: Direction): Boolean {
-    TODO()
+    val range = 1..width
+    val dir =
+            if (direction in listOf(Direction.UP, Direction.LEFT))
+                range
+            else range.reversed()
+    var isValuesMoved = false
+    when (direction) {
+        Direction.UP, Direction.DOWN -> {
+            for (i in range) {
+                val isMoved = moveValuesInRowOrColumn(getColumn(dir, i))
+                isValuesMoved = isValuesMoved || isMoved
+            }
+        }
+        Direction.RIGHT, Direction.LEFT -> {
+            for (i in range) {
+                val isMoved = moveValuesInRowOrColumn(getRow(i, dir))
+                isValuesMoved = isValuesMoved || isMoved
+            }
+        }
+    }
+    return isValuesMoved
 }
